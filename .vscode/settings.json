@@ -1,0 +1,8 @@
+{
+    "editor.fontSize": 16,
+    "java.autobuild.enabled": false,
+    "java.inlayHints.parameterNames.enabled": "none",
+    "files.associations": {
+        "mutex": "cpp"
+    }
+}

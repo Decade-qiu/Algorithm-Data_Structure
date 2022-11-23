@@ -1,0 +1,43 @@
+int waiting = 0;          // 等候顾客数
+int sum = N;              // 椅子数
+semaphore customers = 0;  // 等候的顾客
+semaphore barbers = 0;    // 空闲的理发师
+semaphore mutex = 1;      // 互斥
+
+barber() {             // 理发师
+    while(true) {
+        P(customers); // 有顾客吗？若无顾客，理发师睡眠
+        P(mutex);     // 保证waiting--完整进行
+        waiting--;    // 等候顾客数减一
+        V(mutex);
+        V(barbers);   // 理发师准备为顾客理发
+        cut_hair();   // 理发师帮顾客理发
+    }
+}
+
+customer() {            // 顾客
+    P(mutex);              // 进入临界区
+    if(waiting < sum) {  // 有空椅子
+    	waiting++;    // 等候顾客加一
+    	V(mutex);     
+        V(customers); // 唤醒理发师
+   	 	P(barbers);   // 等待理发师
+   	 	get_haircut();// 顾客坐下理发
+    } else
+    	V(mutex);     // 没椅子，顾客走人
+}
+
+
+semaphore S1 = 1   R1 = 0  R2 = 0  R3 = 0  MUTEX = 1
+int count = 0;
+
+S1{          R1{             R2{            R3{
+P(S1);         P(R1);          P(R2);        P(R3);
+P(MUTEX);      P(MUTEX);       P(MUTEX);      P(MUTEX);
+Send message;  Get message;    Get message;   Get message;  	
+count = 0;     count += 1;     count += 1;    count += 1;
+V(MUTEX);      if count == 3   if count == 3  if count==3				
+V(R1);              V(S1);      	 V(S1);      	V(S1);
+V(R2);         V(MUTEX);       V(MUTEX);      V(MUTEX);
+V(R3);	                        
+}              }               }              }

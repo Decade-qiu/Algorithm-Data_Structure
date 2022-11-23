@@ -1,0 +1,185 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+body {
+    background:url(../img/beauty.gif);
+}
+
+#bigbox {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+#banner {
+    width: 1000px;
+    font-size: 0px;
+}
+
+#banner img {
+    width: 1000px;
+
+}
+
+nav {
+    background-color: #CCD0D9;
+    width: 1000px;
+    height: 60px;
+}
+
+nav a {
+    text-decoration: none;
+    line-height: 60px;
+    margin-left: 50px;
+    margin-right: 50px;
+    color: #020C16;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #1a9be6;
+}
+
+.dangqian {
+    color: #1a9be6;
+
+}
+
+#main {
+    height: 490px;
+    width: 1000px;
+    margin: 0 auto;
+    background-color: #86aacb;
+}
+
+#main_left {
+    width: 300px;
+    display: inline-block;
+    background-color: #86aacb;
+    float: left;
+}
+
+h2 {
+    box-sizing: border-box;
+    padding-left: 10px;
+    font-size: 20px;
+    line-height: 30px;
+    background-color: #03151F;
+    color: #CCD0D9;
+}
+
+#main_left img {
+    width: 300px;
+}
+
+#main_left p {
+    margin-left: 10px;
+    line-height: 40px;
+}
+
+#main_left span {
+    font-weight: bold;
+}
+
+#main_right {
+
+    position: relative;
+    width: 680px;
+    margin-left: 20px;
+    display: inline-block;
+    height: 200px;
+}
+
+#main_right img {
+    position: absolute;
+    width: 260px;
+    height: 460px;
+    right: 0px;
+    top: 30px;
+}
+
+#main_right p {
+    font-family:'Times New Roman', Times, serif;
+    font-size: 16px;
+    font-weight:bolder;
+    color: #be1f1f;
+    text-align:left;
+    text-decoration:underline;
+
+    width: 330px;
+    display: inline-block;
+    margin-left: 10px;
+    text-indent: 2em;
+    line-height: 30px;
+    margin-top: 10px;
+}
+
+#luxing {
+    background-color: #86aacb;
+    width: 1000px;
+}
+
+#luxing div {
+    font-size: 0px;
+}
+
+#picture {
+    font-size: 0px;
+    display: inline-block;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 15px;
+}
+
+#picture img {
+    width: 300px;
+    height: 250px;
+}
+
+#picture p {
+    font-size: 18px;
+    text-align: center;
+    line-height: 60px;
+
+}
+
+footer {
+    line-height: 60px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #CCD0D9;
+}
+
+#main_right ul li {
+    width: 660px;
+    margin-left: 10px;
+    font-size: 12px;
+    margin-top: 10px;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 10px;
+}
+
+#main_right ul li span {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#liuyan {
+    width: 660px;
+    margin-left: 10px;
+    margin: 20px;
+}
+
+#liuyan span {
+    display: inline-block;
+    width: 80px;
+    line-height: 40px;
+}
+
+button {
+    width: 100px;
+    height: 30px;
+    margin-left: 80px;
+}
