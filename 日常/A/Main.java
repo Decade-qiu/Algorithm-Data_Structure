@@ -4,22 +4,29 @@ import java.io.*;
 
 public class Main {
     static String ss, io[];
-    static int test, N = 30, M = 10000007;
+    static int test, N = 100010, M = 10000007;
     static int n, m;
-    static int a[] = new int[N], b[][] = new int[N][N];
+    static int a[] = new int[N], tr[] = new int[N], ans[] = new int[N];
     static void solve() throws IOException{
-        n = ni(in.readLine());
-        int ans = 0;
-        HashSet<String> hs = new HashSet<>();
-        while (n-- > 0){
-            io = in.readLine().split(" ");
-            hs.add(io[0]+"!"+io[1]);
+        n = ni();
+        for (int i = 0;i < n;i++) {
+            a[i] = ni();
         }
-        out.println(hs.size());
-    }
-    static int aa(int x, int y){
-        return x == 0 ? y : aa(y, y % x);
-    }                              
+        tr[n-1] = a[n-1];
+        for (int i = n-2;i >= 0;i--) tr[i] = min(tr[i+1], a[i]);
+        for (int i = 0;i < n;i++){
+            int v = a[i];
+            int l = i, r = n-1;
+            while (l <= r){
+                int m = l+r >> 1;
+                if (tr[m] >= v) r = m-1;
+                else l = m+1;
+            }
+            if (l == i) ans[i] = -1;
+            else ans[i] = l-i-2;
+        }
+        for (int i = 0;i < n;i++) out.print(ans[i]+" ");
+    }                             
     public static void main(String[] args) throws Exception {
         test = 1; //ni(in.readLine());
         while (test-- > 0){ 
