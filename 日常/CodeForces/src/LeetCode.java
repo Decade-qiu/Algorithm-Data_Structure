@@ -2,52 +2,67 @@ import java.util.*;
 
 
 public class LeetCode {
+    static int[][] int2d(String x){
+        x = x.substring(2, x.length()-2);
+        String[] d2 = x.split("\\],\\[");
+        int n = d2.length, m = d2[0].split(",").length;
+        int[][] res = new int[n][m];
+        for (int i = 0;i < n;i++){
+            String[] cur = d2[i].split(",");
+            for (int j = 0;j < m;j++) res[i][j] = Integer.parseInt(cur[j]);
+        }
+        return res;
+    }
     public static void main(String[] args) {
-        int[][] t = {{0,1,10},{0,2,1},{1,2,2}};
-        int[] ttt = {1,4,6,7,8,20};
-        int[] xxx = {7,2,15};
-        String[] sss = {"xbc","pcxbcf","xb","cxbc","pcxbc"};
-        int ans = new Solution().reachableNodes(
-                t, 6, 3
+        int[][] a = int2d("[[0,2,2],[0,5,6],[1,0,3],[1,4,5],[2,1,1],[2,3,3],[2,3,4],[3,4,2],[4,5,1]]");
+        // for (int[] i : a){
+        //     for (int ii : i) System.out.print(ii);
+        //     System.out.println();
+        // }
+        long ans = new Solution().minimumWeight(
+                6, int2d("[[0,2,2],[0,5,6],[1,0,3],[1,4,5],[2,1,1],[2,3,3],[2,3,4],[3,4,2],[4,5,1]]"), 0, 1, 5
         );
         System.out.println(ans);
     }
 }
 
 class Solution {
-    public int reachableNodes(int[][] edges, int maxMoves, int n) {
-        List<int[]>[] g = new List[n];
-        for (int i = 0;i < n;i++) g[i] = new ArrayList<>();
-        for (int[] e : edges){
-            g[e[0]].add(new int[]{e[1], e[2]+1});
-            g[e[1]].add(new int[]{e[0], e[2]+1});
-        }
-        int[] dis = new int[n], vis = new int[n];
-        Arrays.fill(dis, 1, n, 0x3f3f3f3f);
-        PriorityQueue<int[]> q = new PriorityQueue<>((x, y)->x[1]-y[1]);
-        q.add(new int[]{0, 0});
+    long[] dj(int v){
+        int n = g.length;
+        long[] dis = new long[n];
+        boolean[] vis = new boolean[n];
+        Arrays.fill(dis, Integer.MAX_VALUE); dis[v] = 0;
+        PriorityQueue<long[]> q = new PriorityQueue<>(
+            (x, y)->Long.compare(x[1], y[1])
+        );
+        q.add(new long[]{v, 0});
         while (!q.isEmpty()){
-            int u = q.poll()[0];
-            if (vis[u] == 1) continue;
-            vis[u] = 1;
+            int u = (int)q.poll()[0];
+            if (vis[u]) continue;
+            vis[u] = true;
             for (int[] ne : g[u]){
-                int v = ne[0], d = ne[1];
-                if (dis[v] > dis[u]+d){
-                    dis[v] = dis[u]+d;
-                    q.add(new int[]{v, dis[v]});
+                int t = ne[0], d = ne[1];
+                if (dis[t] > dis[u]+d){
+                    dis[t] = dis[u]+d;
+                    q.add(new long[]{t, dis[t]});
                 }
             }
         }
-        int ans = 0;
+        return dis;
+    }
+    List<int[]>[] g;
+    public long minimumWeight(int n, int[][] edges, int src1, int src2, int dest) {
+        g = new List[n];
+        for (int i = 0;i < n;i++) g[i] = new ArrayList<>();
+        for (int[] e : edges) g[e[0]].add(new int[]{e[1], e[2]});
+        long[] d1 = dj(src1);
+        long[] d2 = dj(src2);
+        for (int i = 0;i < n;i++) g[i].clear();
+        for (int[] e : edges) g[e[1]].add(new int[]{e[0], e[2]});
+        long[] d3 = dj(dest);
+        long ans = Long.MAX_VALUE;
         for (int i = 0;i < n;i++){
-            System.out.println(dis[i]);
-            if (dis[i] <= maxMoves) ans++;
-        }
-        for (int[] e : edges){
-            int u = e[0], v = e[1], d = e[2];
-            int le = Math.min(d, maxMoves-dis[u]);
-            int ri = Math.min(d, maxMoves-dis[v]);
-            ans += Math.min(le+ri, d);
+            ans = Math.min(ans, d1[i]+d2[i]+d3[i]);
         }
         return ans;
     }
