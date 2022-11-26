@@ -1,69 +1,38 @@
-
 import java.util.*;
+
 import java.io.*;
+import java.lang.reflect.Array;
 
 public class Main {
     static String ss, io[];
-    static int test, n, N = 1010;
-    static int[] a[] = new int[N][2];
-    static int[] b[] = new int[N][2];
+    static int test, N = 10010, M = 10000007;
+    static int t, n, m, k;
+    static int a[] = new int[N];
     static void solve() throws IOException{
-        io = in.readLine().split(" ");
-        n = ni(io[0]); int m = ni(io[1]);
-        int n1 = 0, n2 = 0;
-        for (int i = 0;i < n;i++){
-            io = in.readLine().split(" ");
-            int u = ni(io[0]), v = ni(io[1]);
-            if (io[2].equals("A")){
-                a[n1][0] = u;
-                a[n1++][1] = v;
+        String x = in.readLine(), y = in.readLine();
+        n = x.length();
+        m = y.length();
+        if (x.contains(y)) out.println(x);
+        else if (y.contains(x)) out.println(y);
+        else{
+            int s = 0;
+            while (n-s-1 >= 0 && s < m && x.charAt(n-s-1) == y.charAt(s)) ++s;
+            int t = 0;
+            while (m-s-1 >= 0 && s < n && y.charAt(m-t-1) == x.charAt(t)) ++t;
+            if (t == 0 && s == 0){
+                out.println(x+y);
             }else{
-                b[n2][0] = u;
-                b[n2++][1] = v;
-            }
-        }
-        while (m-- > 0){
-            int C = ni(), A = ni(), B = ni();
-            int u = a[0][0], v = a[0][1];
-            int sum = C+A*u+B*v;
-            if (sum == 0){
-                out.println("No");
-                continue;
-            }
-            int f = sum<0?-1:1, res = 0;
-            for (int i = 1;i < n1;i++){
-                u = a[i][0];v = a[i][1];
-                sum = C+A*u+B*v;
-                if (sum*f <= 0){
-                    res = -1;
-                    break;
-                }
-            }
-            if (res == -1){
-                out.println("No");
-                continue;
-            }
-            for (int i = 0;i < n2;i++){
-                u = b[i][0];v = b[i][1];
-                sum = C+A*u+B*v;
-                if (sum*f >= 0){
-                    res = -1;
-                    break;
-                }
-            }
-            if (res == -1){
-                out.println("No");
-            }else{
-                out.println("Yes");
+                if (t < s){
+                    out.println(x.substring(0, n-s)+y);
+                }else out.println(y.substring(0, m-s)+x);
             }
         }
     }
     public static void main(String[] args) throws Exception {
-        test = 1;
+        test = 1; //ni(in.readLine());
         while (test-- > 0){
             solve();
         }
-        //out.println();
         out.flush();
     }
     static int ni() throws IOException{input.nextToken();return (int) input.nval;}
@@ -76,4 +45,4 @@ public class Main {
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     static StreamTokenizer input = new StreamTokenizer(in);
     static PrintWriter out = new PrintWriter(new BufferedOutputStream(System.out));
-}
+}  
