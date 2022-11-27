@@ -15,17 +15,31 @@ public class Main {
         if (x.contains(y)) out.println(x);
         else if (y.contains(x)) out.println(y);
         else{
-            int s = 0;
-            while (n-s-1 >= 0 && s < m && x.charAt(n-s-1) == y.charAt(s)) ++s;
-            int t = 0;
-            while (m-s-1 >= 0 && s < n && y.charAt(m-t-1) == x.charAt(t)) ++t;
-            if (t == 0 && s == 0){
-                out.println(x+y);
-            }else{
-                if (t < s){
-                    out.println(x.substring(0, n-s)+y);
-                }else out.println(y.substring(0, m-s)+x);
+            long M = 0x60000005, P = 171;
+            long[] h1 = new long[n+1], h2 = new long[m+1];
+            long[] p = new long[Math.max(n, m)+1];
+            p[0] = 1;
+            for (int i = 1;i <= n;i++){
+                p[i] = (p[i-1]*P) % M;
+                h1[i] = (h1[i-1]*P % M + (x.charAt(i-1)-'a'+1)) % M;
             }
+            for (int i = 1;i <= m;i++){
+                p[i] = (p[i-1]*P) % M;
+                h2[i] = (h2[i-1]*P % M + (y.charAt(i-1)-'a'+1)) % M;
+            }
+            int a1 = 0, a2 = 0;
+            for (int i = 1;i <= min(n, m);i++){
+                long xl = (h1[i]-h1[0]*p[i]%M+M)%M;
+                long yr = (h2[m]-h2[m-i]*p[i]%M+M)%M;
+                if (xl == yr) a1 = i;
+            }
+            for (int i = 1;i <= min(n, m);i++){
+                long xr = (h1[m]-h1[m-i]*p[i]%M+M)%M;
+                long yl = (h2[i]-h2[0]*p[i]%M+M)%M;
+                if (xr == yl) a2 = i;
+            }
+            if (a1 > a2) out.println(y.substring(0, m-a1)+x);
+            else out.println(x.substring(0, m-a2)+y);
         }
     }
     public static void main(String[] args) throws Exception {
