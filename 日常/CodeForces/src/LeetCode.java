@@ -1,5 +1,7 @@
 import java.util.*;
 
+import javax.crypto.Mac;
+
 
 public class LeetCode {
     static int[][] int2d(String x){
@@ -13,57 +15,41 @@ public class LeetCode {
         }
         return res;
     }
+    static int[] int1d(String x){
+        x = x.substring(1, x.length()-1);
+        String[] tp = x.split(",");
+        int n = tp.length;
+        int[] res = new int[n];
+        for (int i = 0;i < n;i++){
+            res[i] = Integer.parseInt(tp[i]);
+        }
+        return res;
+    }
     public static void main(String[] args) {
-        int[][] a = int2d("[[0,2,2],[0,5,6],[1,0,3],[1,4,5],[2,1,1],[2,3,3],[2,3,4],[3,4,2],[4,5,1]]");
-        // for (int[] i : a){
-        //     for (int ii : i) System.out.print(ii);
-        //     System.out.println();
-        // }
-        long ans = new Solution().minimumWeight(
-                6, int2d("[[0,2,2],[0,5,6],[1,0,3],[1,4,5],[2,1,1],[2,3,3],[2,3,4],[3,4,2],[4,5,1]]"), 0, 1, 5
-        );
-        System.out.println(ans);
+        System.out.println(new Solution().activitySelect(
+            int2d("[[-52,31],[-73,-26],[82,97],[-65,-11],[-62,-49],[95,99],[58,95],[-31,49],[66,98],[-63,2],[30,47],[-40,-26]]")
+        ));
     }
 }
 
 class Solution {
-    long[] dj(int v){
-        int n = g.length;
-        long[] dis = new long[n];
-        boolean[] vis = new boolean[n];
-        Arrays.fill(dis, Integer.MAX_VALUE); dis[v] = 0;
-        PriorityQueue<long[]> q = new PriorityQueue<>(
-            (x, y)->Long.compare(x[1], y[1])
-        );
-        q.add(new long[]{v, 0});
-        while (!q.isEmpty()){
-            int u = (int)q.poll()[0];
-            if (vis[u]) continue;
-            vis[u] = true;
-            for (int[] ne : g[u]){
-                int t = ne[0], d = ne[1];
-                if (dis[t] > dis[u]+d){
-                    dis[t] = dis[u]+d;
-                    q.add(new long[]{t, dis[t]});
-                }
+    public int activitySelect(int[][] act) {
+        int n = act.length;
+        Arrays.sort(act, (x, y)->x[1]-y[1]);
+        int[] dp = new int[n+1], maxNum = new int[n+1];
+        for (int i = 1;i <= n;i++){
+            int s = act[i-1][0];
+            int l = 0, r = i-1;
+            while (l <= r){
+                int m = l+r >> 1;
+                int cur = m==0?-100000:act[m-1][1];
+                if (cur <= s) l = m+1;
+                else r = m-1;
             }
+            if (r == -1)  dp[i] = 1;
+            else dp[i] = maxNum[r]+1;
+            maxNum[i] = Math.max(maxNum[i-1], dp[i]);
         }
-        return dis;
-    }
-    List<int[]>[] g;
-    public long minimumWeight(int n, int[][] edges, int src1, int src2, int dest) {
-        g = new List[n];
-        for (int i = 0;i < n;i++) g[i] = new ArrayList<>();
-        for (int[] e : edges) g[e[0]].add(new int[]{e[1], e[2]});
-        long[] d1 = dj(src1);
-        long[] d2 = dj(src2);
-        for (int i = 0;i < n;i++) g[i].clear();
-        for (int[] e : edges) g[e[1]].add(new int[]{e[0], e[2]});
-        long[] d3 = dj(dest);
-        long ans = Long.MAX_VALUE;
-        for (int i = 0;i < n;i++){
-            ans = Math.min(ans, d1[i]+d2[i]+d3[i]);
-        }
-        return ans;
+        return n-maxNum[n];
     }
 }
