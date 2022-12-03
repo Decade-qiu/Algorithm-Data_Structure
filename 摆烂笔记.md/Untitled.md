@@ -1,5 +1,7 @@
-## 活动选择问题
-### 贪心
+### 活动选择问题
+> act[i][0] 第i个活动开始时间
+> act[i][1] 第i个活动结束时间
+#### 贪心
 ```java
 public int activitySelect(int[][] act) {
     int n = act.length;
@@ -13,9 +15,13 @@ public int activitySelect(int[][] act) {
     }
     return maxAct;
 }
-时间复杂度 O(nlgn+n) = O(nlgn)
 ```
-### 动态规划
+时间复杂度 $O(n \log n + n) = O(n \log n)$
+
+---
+
+#### 动态规划
+- A
 ```java
 public int activitySelect(int[][] act) {
     int n = act.length;
@@ -44,13 +50,20 @@ public int activitySelect(int[][] act) {
     int maxAct = dp[0][n+1];
     return maxAct;
 }
-时间复杂度 O(n+n^3) = O(n^3)
 ```
+时间复杂度 $O(n + n^3) = O(n^3)$
+- B
+> **dp[i] 表示从前i个活动中可以选出的最多不重叠的活动数目**
+> 对第i个活动来说， 只有两种情况，选 和 不选， 即
+> $\quad$ 1. 不考虑第i个活动 dp[i]=dp[i-1] 
+> $\quad$ 2. 考虑第i个活动 需要找到小于等于第i个活动开始时间前最多可选活动数量，再加1。 （二分优化）
+> dp[i] = $\max{\{dp[i-1], dp[t]+1\}}, 其中 t = \max_{t=1}^{i-1}{\{t\space|\space act[t][1]<=act[i][0]\}}$
+> 思路就是这样(感觉和01背包很像)，但不知道有没有bug。
 ```java
 public int activitySelect(int[][] act) {
     int n = act.length;
     Arrays.sort(act, (x, y)->x[1]-y[1]);
-    int[] dp = new int[n+1], maxNum = new int[n+1];
+    int[] dp = new int[n+1];
     for (int i = 1;i <= n;i++){
         int s = act[i-1][0];
         int l = 0, r = i-1;
@@ -61,10 +74,10 @@ public int activitySelect(int[][] act) {
             else r = m-1;
         }
         if (r == -1)  dp[i] = 1;
-        else dp[i] = maxNum[r]+1;
-        maxNum[i] = Math.max(maxNum[i-1], dp[i]);
+        else dp[i] = dp[r]+1;
+        dp[i] = Math.max(dp[i], dp[i-1]);
     }
-    return n-maxNum[n];
+    return dp[n];
 }
-时间复杂度 O()
 ```
+时间复杂度 $O(n \log n+n \log n) = O(n \log n)$
