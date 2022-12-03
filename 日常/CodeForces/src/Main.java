@@ -5,17 +5,7 @@ public class Main {
     static String ss, io[];
     static int test, N = 200010, M = 10000007;
     static void solve() throws IOException{
-        long n = ni(), m = ni();
-        long x = 1;
-        while ((n*x)%10 != 0) x++;
-        if (x > m){
-            out.println(n*m);
-            return;
-        }
-        long res = m/x;
-        String tp = String.valueOf(res);
-        res = (tp.charAt(0)-'0')*(long)Math.pow(10, tp.length()-1);
-        out.println(n*x*res);
+        
     }
     public static void main(String[] args) throws Exception {
         //test = 1;
