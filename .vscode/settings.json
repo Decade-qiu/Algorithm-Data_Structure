@@ -3,6 +3,7 @@
     "java.autobuild.enabled": false,
     "java.inlayHints.parameterNames.enabled": "none",
     "files.associations": {
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "unordered_map": "cpp"
     }
 }
