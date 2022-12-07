@@ -26,55 +26,83 @@ public class LeetCode {
         return res;
     }
     public static void main(String[] args) {
-        System.out.println(new Solution().findGoodStrings(
-            2,
-            "aa",
-            "da",
-            "b"
+        System.out.println(new Solution().magnificentSets(
+            6,
+                int2d("[[1,2],[1,4],[1,5],[2,6],[2,3]]")
         ));
     }
 }
 
 class Solution {
-    char[] c1, c2;
-    long M = (long)1e9+7;
-    int n, m;
-    int[] fail;
-    long[][] memo;
-    long dfs(int len, int pre, boolean f){
-        if (len == n) return 1;
-        if (!f && memo[len][pre] != -1) return memo[len][pre];
-        char max = f?c1[len]:'z';
-        long ans = 0;
-        for (char i = 'a';i <= max;i++){
-            int ppre = pre;
-            while (ppre != 0 && c2[ppre] != i) {
-                ppre = fail[ppre-1];
-            }
-            if (c2[ppre] == i) ppre++;
-            if (ppre != m) ans=(ans+dfs(len+1,ppre,f&&i==max))%M;
+    List<Integer>[] g;
+    HashMap<Integer, Integer> mp = new HashMap<>();
+    int[] fa;
+    int n;
+    int find(int x){
+        if (x == fa[x]) return x;
+        return fa[x] = find(fa[x]);
+    }
+    public int magnificentSets(int n_, int[][] edges) {
+        n = n_;
+        g = new List[n+1];
+        fa = new int[n+1];
+        for (int i = 1;i <= n;i++) {
+            g[i] = new ArrayList<>();
+            fa[i] = i;
         }
-        memo[len][pre] = ans;
+        for (int[] ed : edges){
+            int u = ed[0], v = ed[1];
+            g[u].add(v); g[v].add(u);
+            int x = find(u), y = find(v);
+            if (x != y){
+                if (x > y){
+                    int tp = x;
+                    x = y;
+                    y = tp;
+                }
+                fa[y] = x;
+            }
+        }
+        int ans = 0;
+        for (int i = 1;i <= n;i++) a(i);
+        for (int i = 1;i <= n;i++){
+            if (fa[i] == i){
+                int cur = mp.getOrDefault(i, -1);
+                if (cur == -1) return -1;
+                ans += cur;
+            }
+        }
         return ans;
     }
-    int get(String x){
-        c1 = x.toCharArray();
-        for (int i = 0;i <= n;i++) Arrays.fill(memo[i], -1);
-        return (int)dfs(0, 0, true);
-    }
-    public int findGoodStrings(int N, String s1, String s2, String e) {
-        if (s1.compareTo(s2) > 0) return 0;
-        c2 = e.toCharArray();
-        n = s1.length(); m = e.length();
-        memo = new long[n+1][m+1];
-        fail = new int[m];
-        for (int i = 1, j = 0; i < m; ++i) {
-            while (j != 0 && e.charAt(j) != e.charAt(i)) j = fail[j - 1];
-            if (e.charAt(j) == e.charAt(i)) ++j;
-            fail[i] = j;
+    void a(int u){
+        Deque<Integer> d = new LinkedList<>();
+        int[] dis = new int[n+1], vis = new int[n+1];
+        d.offerLast(u); dis[u] = 1;
+        int mi = n+2;
+        while (!d.isEmpty()){
+            int x = d.pollLast();
+            if (vis[x] == 1) continue;
+            vis[x] = 1;
+            mi = Math.min(mi, x);
+            for (int v : g[x]){
+                if (dis[v] == 0) dis[v] = dis[x]+1;
+                d.offerLast(v);
+            }
         }
-        long x = get(s2), y = get(s1);
-        //System.out.println(x+" "+y);
-        return (int)((x-y+M)%M+(s1.contains(e)?0:1));
-    }   
+        int f = 0, res = 0;
+        for (int i = 1;i <= n && f == 0;i++){
+            if (dis[i] != 0){
+                res = Math.max(res, dis[i]);
+                for (int j : g[i]){
+                    if (Math.abs(dis[i]-dis[j]) != 1){
+                        f = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        if (f != 0){
+            mp.put(mi, res);
+        }
+    }
 }

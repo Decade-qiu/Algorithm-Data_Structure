@@ -5,44 +5,26 @@ public class Main {
     static String ss, io[];
     static int test, N = 200010, M = 10000007;
     static void solve() throws IOException{
-        int n = ni(), p = ni();
-        int[] a = new int[N];
-        for (int i = n;i >= 1;i--) a[i] = ni();
-        int l = 0, r = p-1;
-        while (l <= r){
-            int m = l+r >> 1;
-            if (ck(a, n, m, p)) r = m-1;
-            else l = m+1;
+        int n = ni(), f = 0;
+        int[] a = new int[n+1], b = new int[n+1];
+        TreeSet<Integer> ts = new TreeSet<>();
+        for (int i = 1;i <= n;i++) ts.add(i);
+        for (int i = 1;i <= n/2;i++) {
+            a[i] = ni();
+            if (!ts.contains(a[i])) f = 1;
+            ts.remove(a[i]);
         }
-        out.println(l);
-    }
-    static boolean ck(int[] a, int n, int m, int p){
-        List<int[]> x = new ArrayList<>();
-        int pre = 0;
-        for (int i = 1;i <= n;i++){
-            int l = a[i];
-            int r = a[i]+(i==1?m:pre);
-            if (r >= p){
-                pre = 1;
-                x.add(new int[]{0, r-p});
-                r = p-1;
-            }else pre = 0;
-            x.add(new int[]{l, r});
+        if (f == 1) {out.println(-1);return;}
+        for (int i = n/2;i >= 1;i--){
+            Integer c = ts.lower(a[i]);
+            if (c == null) {out.println(-1);return;}
+            else {
+                b[i] = c;
+                ts.remove(c);
+            }
         }
-        if (pre == 1){
-            x.add(new int[]{1, 1});
-        }
-        Collections.sort(x, (s, t)->{
-            if (s[0] == t[0]) return s[1]-t[1];
-            return s[0]-t[0];
-        });;
-        int st = x.get(0)[0], ed = x.get(0)[1];
-        for (int i = 1;i < x.size();i++){
-            int l = x.get(i)[0], r = x.get(i)[1];
-            if (l >= ed+2) return false;
-            ed = Math.max(ed, r);
-        }
-        return st==0 && ed==p-1;
+        for (int i = 1;i <= n/2;i++) out.print(b[i]+" "+a[i]+" ");
+        out.println();
     }
     public static void main(String[] args) throws Exception {
         //test = 1;
