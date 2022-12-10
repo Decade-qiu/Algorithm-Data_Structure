@@ -1,7 +1,5 @@
 import java.util.*;
 
-import javax.crypto.Mac;
-
 
 public class LeetCode {
     static int[][] int2d(String x){
@@ -26,83 +24,35 @@ public class LeetCode {
         return res;
     }
     public static void main(String[] args) {
-        System.out.println(new Solution().magnificentSets(
-            6,
-                int2d("[[1,2],[1,4],[1,5],[2,6],[2,3]]")
+        System.out.println(new Solution().maxHeight(
+                int2d("[[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]]")
         ));
     }
 }
 
 class Solution {
-    List<Integer>[] g;
-    HashMap<Integer, Integer> mp = new HashMap<>();
-    int[] fa;
-    int n;
-    int find(int x){
-        if (x == fa[x]) return x;
-        return fa[x] = find(fa[x]);
-    }
-    public int magnificentSets(int n_, int[][] edges) {
-        n = n_;
-        g = new List[n+1];
-        fa = new int[n+1];
-        for (int i = 1;i <= n;i++) {
-            g[i] = new ArrayList<>();
-            fa[i] = i;
-        }
-        for (int[] ed : edges){
-            int u = ed[0], v = ed[1];
-            g[u].add(v); g[v].add(u);
-            int x = find(u), y = find(v);
-            if (x != y){
-                if (x > y){
-                    int tp = x;
-                    x = y;
-                    y = tp;
+    public int maxHeight(int[][] c) {
+        int n = c.length;
+        for(int i=0;i<n;i++){Arrays.sort(c[i]);}
+        Arrays.sort(c, (a, b)->{
+            if (a[0] == b[0]){
+                if (a[1] == b[1]) return b[2]-a[2];
+                return b[1]-a[1];
+            }return b[0]-a[0];
+        });
+        int[] d = new int[n+1];
+        for (int i = 1;i <= n;i++){
+            int x = c[i-1][0], y = c[i-1][1], h = c[i-1][2];
+            d[i] = h;
+            for (int j = 1;j < i;j++){
+                int x1 = c[j-1][1], y1 = c[j-1][2];
+                if (y<=x1&&h<=y1){
+                    d[i] = Math.max(d[i], d[j]+h);
                 }
-                fa[y] = x;
             }
         }
         int ans = 0;
-        for (int i = 1;i <= n;i++) a(i);
-        for (int i = 1;i <= n;i++){
-            if (fa[i] == i){
-                int cur = mp.getOrDefault(i, -1);
-                if (cur == -1) return -1;
-                ans += cur;
-            }
-        }
+        for (int i = 1;i <= n;i++) ans = Math.max(ans, d[i]);
         return ans;
-    }
-    void a(int u){
-        Deque<Integer> d = new LinkedList<>();
-        int[] dis = new int[n+1], vis = new int[n+1];
-        d.offerLast(u); dis[u] = 1;
-        int mi = n+2;
-        while (!d.isEmpty()){
-            int x = d.pollLast();
-            if (vis[x] == 1) continue;
-            vis[x] = 1;
-            mi = Math.min(mi, x);
-            for (int v : g[x]){
-                if (dis[v] == 0) dis[v] = dis[x]+1;
-                d.offerLast(v);
-            }
-        }
-        int f = 0, res = 0;
-        for (int i = 1;i <= n && f == 0;i++){
-            if (dis[i] != 0){
-                res = Math.max(res, dis[i]);
-                for (int j : g[i]){
-                    if (Math.abs(dis[i]-dis[j]) != 1){
-                        f = 1;
-                        break;
-                    }
-                }
-            }
-        }
-        if (f != 0){
-            mp.put(mi, res);
-        }
     }
 }

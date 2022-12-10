@@ -3,32 +3,61 @@ import java.io.*;
 
 public class Main {
     static String ss, io[];
-    static int test, N = 200010, M = 10000007;
+    static int test, N = 100010, M = 10000007;
+    static long[] f = new long[N*4];
+    static long[] g = new long[N*4];
+    static int[] a = new int[N];
+    static void bd(int k, int l, int r){
+        if (l == r){
+            f[k] = a[l];
+            return;
+        }
+        int m = l+r >> 1;
+        bd(k*2, l, m);
+        bd(k*2+1, m+1, r);
+        f[k] = f[k*2]+f[k*2+1];
+    }
+    static void down(int k, int l, int m, int r){
+        f[k*2] += g[k]*(m-l+1);
+        f[k*2+1] += g[k]*(r-m);
+        g[k*2] += g[k];
+        g[k*2+1] += g[k];
+        g[k] = 0;
+    }
+    static void upd(int k, int l, int r, int s, int t, int v){
+        if (s <= l && r <= t){
+            f[k] += v*(r-l+1);
+            g[k] += v;
+            return;
+        }
+        int m = l+r >> 1;
+        down(k, l, m, r);
+        if (s <= m) upd(k*2, l, m, s, t, v);
+        if (m+1 <= t) upd(k*2+1, m+1, r, s, t, v);
+        f[k] = f[k*2]+f[k*2+1];
+    }
+    static long qry(int k, int l, int r, int s, int t){
+        if (s <= l && r <= t) return f[k];
+        int m = l+r >> 1;
+        down(k, l, m, r);
+        long ans = 0;
+        if (s <= m) ans += qry(k*2, l, m, s, t);
+        if (m+1 <= t) ans += qry(k*2+1, m+1, r, s, t);
+        return ans;
+    }
     static void solve() throws IOException{
-        int n = ni(), f = 0;
-        int[] a = new int[n+1], b = new int[n+1];
-        TreeSet<Integer> ts = new TreeSet<>();
-        for (int i = 1;i <= n;i++) ts.add(i);
-        for (int i = 1;i <= n/2;i++) {
-            a[i] = ni();
-            if (!ts.contains(a[i])) f = 1;
-            ts.remove(a[i]);
+        int n = ni(), m = ni();
+        for (int i = 1;i <= n;i++) a[i] = ni();
+        bd(1, 1, n);
+        while (m-- > 0){
+            int op = ni();
+            if (op == 1) upd(1, 1, n, ni(), ni(), ni());
+            else out.println(qry(1, 1, n, ni(), ni()));
         }
-        if (f == 1) {out.println(-1);return;}
-        for (int i = n/2;i >= 1;i--){
-            Integer c = ts.lower(a[i]);
-            if (c == null) {out.println(-1);return;}
-            else {
-                b[i] = c;
-                ts.remove(c);
-            }
-        }
-        for (int i = 1;i <= n/2;i++) out.print(b[i]+" "+a[i]+" ");
-        out.println();
     }
     public static void main(String[] args) throws Exception {
-        //test = 1;
-        test = ni(in.readLine());
+        test = 1;
+        //test = ni(in.readLine());
         while (test-- > 0){
             solve();
         }
