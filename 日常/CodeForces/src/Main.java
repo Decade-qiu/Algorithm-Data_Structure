@@ -1,59 +1,42 @@
-import java.util.*;
-import java.io.*;
+import java.util.*;import java.io.*;
 
 public class Main {
     static String ss, io[];
     static int test, N = 100010, M = 10000007;
-    static long[] f = new long[N*4];
-    static long[] g = new long[N*4];
-    static int[] a = new int[N];
-    static void bd(int k, int l, int r){
-        if (l == r){
-            f[k] = a[l];
-            return;
-        }
-        int m = l+r >> 1;
-        bd(k*2, l, m);
-        bd(k*2+1, m+1, r);
-        f[k] = f[k*2]+f[k*2+1];
-    }
-    static void down(int k, int l, int m, int r){
-        f[k*2] += g[k]*(m-l+1);
-        f[k*2+1] += g[k]*(r-m);
-        g[k*2] += g[k];
-        g[k*2+1] += g[k];
-        g[k] = 0;
-    }
-    static void upd(int k, int l, int r, int s, int t, int v){
-        if (s <= l && r <= t){
-            f[k] += v*(r-l+1);
-            g[k] += v;
-            return;
-        }
-        int m = l+r >> 1;
-        down(k, l, m, r);
-        if (s <= m) upd(k*2, l, m, s, t, v);
-        if (m+1 <= t) upd(k*2+1, m+1, r, s, t, v);
-        f[k] = f[k*2]+f[k*2+1];
-    }
-    static long qry(int k, int l, int r, int s, int t){
-        if (s <= l && r <= t) return f[k];
-        int m = l+r >> 1;
-        down(k, l, m, r);
-        long ans = 0;
-        if (s <= m) ans += qry(k*2, l, m, s, t);
-        if (m+1 <= t) ans += qry(k*2+1, m+1, r, s, t);
-        return ans;
-    }
+    static Map<Character, List<String>> mp = new HashMap<>();
+    static Set<String> vis = new HashSet<>();
+    static int ok = 0;
     static void solve() throws IOException{
-        int n = ni(), m = ni();
-        for (int i = 1;i <= n;i++) a[i] = ni();
-        bd(1, 1, n);
-        while (m-- > 0){
-            int op = ni();
-            if (op == 1) upd(1, 1, n, ni(), ni(), ni());
-            else out.println(qry(1, 1, n, ni(), ni()));
+        int n = ni(in.readLine());
+        Set<String> g = new HashSet<>();
+        for (int i = 0;i < n;i++){
+            ss = in.readLine();
+            if (ss.length() == 1) ss = ss + ss.charAt(0);
+            String cur = ""+ss.charAt(0)+ss.charAt(ss.length()-1);
+            mp.computeIfAbsent(ss.charAt(0), k->new ArrayList<>()).add(cur);
+            g.add(cur);
         }
+        for (String s : g){
+            vis.clear();
+            vis.add(s);
+            dfs(s, 1);
+            if (ok == 1) break;
+        }
+        out.println(ok==1?"First":"Second");
+    }
+    static void dfs(String s, int len){
+        //out.print(s+" ");
+        int x = 0;
+        for (String ne : mp.get(s.charAt(s.length()-1))){
+            if (ok == 1) break;
+            if (vis.contains(ne)) continue;
+            x = 1;
+            vis.add(ne);
+            dfs(ne, len+1);
+            vis.remove(ne);
+        }
+        if (x == 0 && len%2==1) ok = 1; 
+        //if (x == 0) out.println();
     }
     public static void main(String[] args) throws Exception {
         test = 1;

@@ -24,35 +24,48 @@ public class LeetCode {
         return res;
     }
     public static void main(String[] args) {
-        System.out.println(new Solution().maxHeight(
-                int2d("[[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]]")
+        String[] x = {"[[1,2,3],[2,5,7],[3,5,1]]","[5,6,2]"};
+        System.out.println(new Solution().maxPoints(
+                int2d(x[0]), int1d(x[1])
         ));
     }
 }
 
 class Solution {
-    public int maxHeight(int[][] c) {
-        int n = c.length;
-        for(int i=0;i<n;i++){Arrays.sort(c[i]);}
-        Arrays.sort(c, (a, b)->{
-            if (a[0] == b[0]){
-                if (a[1] == b[1]) return b[2]-a[2];
-                return b[1]-a[1];
-            }return b[0]-a[0];
-        });
-        int[] d = new int[n+1];
-        for (int i = 1;i <= n;i++){
-            int x = c[i-1][0], y = c[i-1][1], h = c[i-1][2];
-            d[i] = h;
-            for (int j = 1;j < i;j++){
-                int x1 = c[j-1][1], y1 = c[j-1][2];
-                if (y<=x1&&h<=y1){
-                    d[i] = Math.max(d[i], d[j]+h);
+    public int[] maxPoints(int[][] g, int[] qr) {
+        int n = g.length, m = g[0].length, k = qr.length, res = 0;
+        int[][] q = new int[k][2];
+        for (int i = 0;i < k;i++){
+            q[i][0] = qr[i];
+            q[i][1] = i;
+        }
+        Arrays.sort(q, (s, t)->s[0]-t[0]);
+        boolean[][] v = new boolean[n][m];
+        int[] dx = {1, -1, 0, 0}, dy = {0, 0, 1, -1};
+        Deque<int[]> pre = new LinkedList<>();
+        pre.add(new int[]{0, 0});
+        v[0][0] = true;
+        for (int i = 0;i < k;i++){
+            Deque<int[]> d = new LinkedList<>(pre);
+            pre.clear();
+            int cur = q[i][0];
+            while (!d.isEmpty()){
+                int[] loc = d.pollFirst();
+                int x = loc[0], y = loc[1];
+                if (g[x][y] >= cur) pre.offerLast(loc);
+                else{
+                    res++;
+                    for (int j = 0;j < 4;j++){
+                        int nx = x+dx[j], ny = y+dy[j];
+                        if (nx<0||ny<0||nx>=n||ny>=m||v[nx][ny]) continue;
+                        v[nx][ny] = true;
+                        d.offerLast(new int[]{nx, ny});
+                    }
                 }
             }
+            qr[q[i][1]] = res;
+            System.out.print(res+" ");
         }
-        int ans = 0;
-        for (int i = 1;i <= n;i++) ans = Math.max(ans, d[i]);
-        return ans;
+        return qr;
     }
 }
