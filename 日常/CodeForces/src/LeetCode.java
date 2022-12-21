@@ -24,48 +24,42 @@ public class LeetCode {
         return res;
     }
     public static void main(String[] args) {
-        String[] x = {"[[1,2,3],[2,5,7],[3,5,1]]","[5,6,2]"};
-        System.out.println(new Solution().maxPoints(
-                int2d(x[0]), int1d(x[1])
+        String[] x = {"[[0,1,10],[1,2,5],[2,3,9],[3,4,13]]",
+                        "[[0,4,14],[1,4,13]]"};
+        System.out.println(new Solution().distanceLimitedPathsExist(
+                5, int2d(x[0]), int2d(x[1])
         ));
     }
 }
 
 class Solution {
-    public int[] maxPoints(int[][] g, int[] qr) {
-        int n = g.length, m = g[0].length, k = qr.length, res = 0;
-        int[][] q = new int[k][2];
-        for (int i = 0;i < k;i++){
-            q[i][0] = qr[i];
-            q[i][1] = i;
+    int[] fa;
+    int find(int t){
+        if (fa[t] == t) return t;
+        return fa[t] = find(fa[t]);
+    }
+    public boolean[] distanceLimitedPathsExist(int n, int[][] e, int[][] q) {
+        fa = new int[n];
+        for (int i = 0;i < n;i++) fa[i] = i;
+        int m = q.length;
+        int[][] tp = new int[m][4];
+        boolean[] ans = new boolean[m];
+        for (int i = 0;i < m;i++){
+            for (int j = 0;j < 3;j++) tp[i][j] = q[i][j];
+            tp[i][3] = i;
         }
-        Arrays.sort(q, (s, t)->s[0]-t[0]);
-        boolean[][] v = new boolean[n][m];
-        int[] dx = {1, -1, 0, 0}, dy = {0, 0, 1, -1};
-        Deque<int[]> pre = new LinkedList<>();
-        pre.add(new int[]{0, 0});
-        v[0][0] = true;
-        for (int i = 0;i < k;i++){
-            Deque<int[]> d = new LinkedList<>(pre);
-            pre.clear();
-            int cur = q[i][0];
-            while (!d.isEmpty()){
-                int[] loc = d.pollFirst();
-                int x = loc[0], y = loc[1];
-                if (g[x][y] >= cur) pre.offerLast(loc);
-                else{
-                    res++;
-                    for (int j = 0;j < 4;j++){
-                        int nx = x+dx[j], ny = y+dy[j];
-                        if (nx<0||ny<0||nx>=n||ny>=m||v[nx][ny]) continue;
-                        v[nx][ny] = true;
-                        d.offerLast(new int[]{nx, ny});
-                    }
-                }
-            }
-            qr[q[i][1]] = res;
-            System.out.print(res+" ");
+        Arrays.sort(tp, (x, y)->x[2]-y[2]);
+        Arrays.sort(e, (x, y)->x[2]-y[2]);
+        int dx = 0;
+        for (int[] t : tp){
+            int x = t[0], y = t[1], d = t[2];
+            while (dx < e.length && e[dx][2] < d){
+                int xx = find(e[dx][0]),yy = find(e[dx][1]);
+                if (xx != yy) fa[xx] = yy;
+                ++dx;
+            }if (find(x) == find(y)) ans[t[3]] = true;
         }
-        return qr;
+        //for (boolean i : ans) System.out.print(i+" ");
+        return ans;
     }
 }
