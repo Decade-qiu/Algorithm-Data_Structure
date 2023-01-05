@@ -34,7 +34,7 @@ public int activitySelect(int[][] act) {
     }
     // 活动0结束时间在所有其他活动之前 活动n+1开始时间在所有其他活动之后
     a[0][0] = a[0][1] = 0;
-    a[n+1][0] = a[n+1][1] = 100000;
+    a[n+1][0] = a[n+1][1] = INF;
     // 按书上的dp解定义 bottom-up求解 最后答案是dp[0][n+1]
     int[][] dp = new int[n+2][n+2];
     for (int len = 2;len <= n+1;len++){
@@ -58,7 +58,7 @@ public int activitySelect(int[][] act) {
 > $\quad$ 1. 不考虑第i个活动 dp[i]=dp[i-1] 
 > $\quad$ 2. 考虑第i个活动 需要找到小于等于第i个活动开始时间前最多可选活动数量，再加1。 （二分优化）
 > dp[i] = $\max{\{dp[i-1], dp[t]+1\}}, 其中 t = \max_{t=1}^{i-1}{\{t\space|\space act[t][1]<=act[i][0]\}}$
-> 思路就是这样(感觉和01背包很像)，但不知道有没有bug。
+> 但仔细一想，这也不是 
 ```java
 public int activitySelect(int[][] act) {
     int n = act.length;
@@ -69,7 +69,7 @@ public int activitySelect(int[][] act) {
         int l = 0, r = i-1;
         while (l <= r){
             int m = l+r >> 1;
-            int cur = m==0?-100000:act[m-1][1];
+            int cur = m==0?-INF:act[m-1][1];
             if (cur <= s) l = m+1;
             else r = m-1;
         }

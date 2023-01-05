@@ -12,6 +12,7 @@ public class LeetCode {
             for (int j = 0;j < m;j++) res[i][j] = Integer.parseInt(cur[j]);
         }
         return res;
+        
     }
     static int[] int1d(String x){
         x = x.substring(1, x.length()-1);
@@ -24,42 +25,47 @@ public class LeetCode {
         return res;
     }
     public static void main(String[] args) {
-        String[] x = {"[[0,1,10],[1,2,5],[2,3,9],[3,4,13]]",
-                        "[[0,4,14],[1,4,13]]"};
-        System.out.println(new Solution().distanceLimitedPathsExist(
-                5, int2d(x[0]), int2d(x[1])
+        String[] x = {"[[7,1000000000,1],[15,3,0],[5,999999995,0],[5,1,1]]",
+                        "[[10,5,0],[15,2,1],[25,1,1],[30,4,0]]"};
+        System.out.println(new Solution().getNumberOfBacklogOrders(
+                int2d(x[0])
         ));
     }
 }
 
 class Solution {
-    int[] fa;
-    int find(int t){
-        if (fa[t] == t) return t;
-        return fa[t] = find(fa[t]);
-    }
-    public boolean[] distanceLimitedPathsExist(int n, int[][] e, int[][] q) {
-        fa = new int[n];
-        for (int i = 0;i < n;i++) fa[i] = i;
-        int m = q.length;
-        int[][] tp = new int[m][4];
-        boolean[] ans = new boolean[m];
-        for (int i = 0;i < m;i++){
-            for (int j = 0;j < 3;j++) tp[i][j] = q[i][j];
-            tp[i][3] = i;
+    public int getNumberOfBacklogOrders(int[][] o) {
+        PriorityQueue<int[]> s = new PriorityQueue<>((x,y)->x[0]-y[0]);
+        PriorityQueue<int[]> b = new PriorityQueue<>((x,y)->y[0]-x[0]);
+        for (int[] ord : o){
+            int p = ord[0], num = ord[1], f = ord[2];
+            if (f == 0){
+                while (!s.isEmpty() && num > 0){
+                    int[] cur = s.peek();
+                    if (cur[0] <= p){
+                        int mins = Math.min(cur[1], num);
+                        cur[1] -= mins;
+                        num -= mins;
+                        s.poll();
+                        if (cur[1] != 0) s.add(cur);
+                    }else break;
+                }if (num != 0) b.add(new int[]{p, num});
+            }else{
+                while (!b.isEmpty() && num > 0){
+                    int[] cur = b.peek();
+                    if (cur[0] >= p){
+                        int mins = Math.min(cur[1], num);
+                        cur[1] -= mins;
+                        num -= mins;
+                        b.poll();
+                        if (cur[1] != 0) b.add(cur);
+                    }else break;
+                }if (num != 0) s.add(new int[]{p, num});
+            }
         }
-        Arrays.sort(tp, (x, y)->x[2]-y[2]);
-        Arrays.sort(e, (x, y)->x[2]-y[2]);
-        int dx = 0;
-        for (int[] t : tp){
-            int x = t[0], y = t[1], d = t[2];
-            while (dx < e.length && e[dx][2] < d){
-                int xx = find(e[dx][0]),yy = find(e[dx][1]);
-                if (xx != yy) fa[xx] = yy;
-                ++dx;
-            }if (find(x) == find(y)) ans[t[3]] = true;
-        }
-        //for (boolean i : ans) System.out.print(i+" ");
-        return ans;
+        long ans = 0, M = (int)1e9+7;
+        while (!s.isEmpty()) ans = (ans+s.poll()[1])%M;
+        while (!b.isEmpty()) ans = (ans+b.poll()[1])%M;
+        return (int)ans;
     }
 }

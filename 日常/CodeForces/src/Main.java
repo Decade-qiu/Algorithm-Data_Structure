@@ -1,42 +1,13 @@
 import java.util.*;import java.io.*;
+import java.util.stream.IntStream;
 
 public class Main {
     static String ss, io[];
-    static int test, N = 100010, M = 10000007;
-    static Map<Character, List<String>> mp = new HashMap<>();
-    static Set<String> vis = new HashSet<>();
-    static int ok = 0;
-    static void solve() throws IOException{
-        int n = ni(in.readLine());
-        Set<String> g = new HashSet<>();
-        for (int i = 0;i < n;i++){
-            ss = in.readLine();
-            if (ss.length() == 1) ss = ss + ss.charAt(0);
-            String cur = ""+ss.charAt(0)+ss.charAt(ss.length()-1);
-            mp.computeIfAbsent(ss.charAt(0), k->new ArrayList<>()).add(cur);
-            g.add(cur);
-        }
-        for (String s : g){
-            vis.clear();
-            vis.add(s);
-            dfs(s, 1);
-            if (ok == 1) break;
-        }
-        out.println(ok==1?"First":"Second");
-    }
-    static void dfs(String s, int len){
-        //out.print(s+" ");
-        int x = 0;
-        for (String ne : mp.get(s.charAt(s.length()-1))){
-            if (ok == 1) break;
-            if (vis.contains(ne)) continue;
-            x = 1;
-            vis.add(ne);
-            dfs(ne, len+1);
-            vis.remove(ne);
-        }
-        if (x == 0 && len%2==1) ok = 1; 
-        //if (x == 0) out.println();
+    static int test, N = 200010, M = 10000007;
+    static int c[] = new int[N], sum = 0;
+    static void solve() throws Exception{
+        Object[] tp = {1,2,3};
+        System.out.println(Arrays.toString(tp));
     }
     public static void main(String[] args) throws Exception {
         test = 1;
